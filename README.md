@@ -1,4 +1,4 @@
-_____  _                 _                   _______                             
+```_____  _                 _                   _______                             
  |  __ \| |               | |                 |__   __|                            
  | |__) | |__   __ _ _ __ | |_ ___  _ __ ___     | |_   _ _ __   ___ _ __          
  |  ___/| '_ \ / _` | '_ \| __/ _ \| '_ ` _ \    | | | | | '_ \ / _ \ '__|         
@@ -6,7 +6,7 @@ _____  _                 _                   _______
  |_|    |_| |_|\__,_|_| |_|\__\___/|_| |_| |_|   |_|\__, | .__/ \___|_|            
                                                      __/ | |                       
  >> TERMINAL AFSK V1.1 | DE LU1VJK | BARILOCHE DX <<|___/|_|
-
+```
 PhantomTyper es una interfaz de comunicación por texto para HF y VHF diseñada para el intercambio asincrónico de datos. Este desarrollo nace de una cuenta pendiente que traía desde los años 90: en esa época, cuando decodificaba mis primeros mensajes POCSAG con el POC32 y más adelante con el PDW, me quedó grabada la idea de desarrollar un sistema propio. Pasó el tiempo, pero la intención de concretarlo siempre estuvo ahí; hoy, el PhantomTyper es el resultado de ese proyecto que finalmente pude cerrar.
 
 Mi visión con este proyecto fue alejarme de los modos digitales modernos que dependen de interfaces gráficas pesadas y complejas. Quise recuperar la esencia del phreaking y esa mística de las terminales de comandos de los 80, pero adaptándolas a lo que hoy busco como radioaficionado: simplicidad, control y un entorno de operación limpio. Sobre todo, busqué cero complejidad en lo que es la programación, sin poner el foco en el "look and feel" web, sino todo lo contrario: lo más rústico y básico posible.
