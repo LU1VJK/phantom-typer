@@ -6,17 +6,20 @@ import time
 import readline
 import random
 
+# --- CONFIGURACIÓN ---
 CALLSIGN = "LU1VJK"
 BAUD = "100"
 SERIAL_PORT = "/dev/ttyUSB0"
 LOG_FILE = os.path.expanduser("~/PHANTOM-TYPER/phantom_history.log")
 
+# --- COLORES (Formato agregado con IA) ---
 C_GREEN = "\033[92m"
 C_BLUE  = "\033[94m"
 C_RED   = "\033[91m"
 C_BOLD  = "\033[1m"
 C_END   = "\033[0m"
 
+# Frases de cierre
 FRASES_DESPEDIDA = [
     "Estudiar para ganarse el ascenso de categoría, es el equivalente a ganar un concurso sin hacer trampa.",
     "La radioafición no es solo hablar, es experimentar y aprender constantemente.",
@@ -24,6 +27,7 @@ FRASES_DESPEDIDA = [
     "73 cordiales!."
 ]
 
+# Banner principal
 def print_banner():
     os.system('clear')
     print(f"""{C_GREEN}{C_BOLD}
@@ -34,6 +38,7 @@ def print_banner():
        '-----------' {C_END}
     {C_BLUE}>> PHANTOM-TYPER HUB <<{C_END}""")
 
+# Guarda los QSOs en el log
 def log_message(mode, text):
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
     entry = f"[{timestamp}] {mode}: {text}"
@@ -41,6 +46,7 @@ def log_message(mode, text):
         f.write(entry + "\n")
         f.flush()
 
+# Muestra últimos mensajes del historial
 def mostrar_contexto():
     if os.path.exists(LOG_FILE):
         print(f"{C_BLUE}--- HISTORIAL DE QSO ---{C_END}")
@@ -51,6 +57,7 @@ def mostrar_contexto():
                 print(f"{color}{l.strip()}{C_END}")
         print(f"{C_BLUE}-------------------------{C_END}")
 
+# Lógica de TX: Activa PTT por DTR y llama a minimodem
 def transmitir():
     print(f"\n{C_BOLD}MENSAJE (Ctrl+C para cancelar):{C_END}")
     msg = input("> ")
@@ -58,7 +65,7 @@ def transmitir():
         try:
             full_payload = f"{msg} DE {CALLSIGN}\n"
             ser = serial.Serial(SERIAL_PORT)
-            ser.setDTR(True)
+            ser.setDTR(True) # PTT ON
             time.sleep(0.5)
             print(f"{C_RED}[TX] Transmitiendo...{C_END}")
             
@@ -66,13 +73,14 @@ def transmitir():
             proc.communicate(input=full_payload)
             
             time.sleep(0.2)
-            ser.setDTR(False)
+            ser.setDTR(False) # PTT OFF
             ser.close()
             log_message("TX", full_payload.strip())
         except Exception as e:
             print(f"{C_RED}Error Serial: {e}{C_END}")
             time.sleep(2)
 
+# Lógica de RX: Escucha via minimodem
 def recibir():
     print(f"\n{C_BLUE}[RX]{C_END} Escuchando... {C_GREEN}(Ctrl+C para Menú){C_END}")
     cmd = "stdbuf -oL minimodem --rx " + BAUD + " -q"
@@ -91,6 +99,7 @@ def recibir():
         print(f"\n{C_BLUE}[RX] Escucha finalizada.{C_END}")
         time.sleep(1)
 
+# Bucle de la terminal
 if __name__ == "__main__":
     if not os.path.exists(os.path.dirname(LOG_FILE)):
         os.makedirs(os.path.dirname(LOG_FILE))
