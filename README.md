@@ -12,6 +12,7 @@ PhantomTyper es una interfaz de comunicación por texto para HF y VHF diseñada 
 Mi visión con este proyecto fue alejarme de los modos digitales modernos que dependen de interfaces gráficas pesadas y complejas. Quise recuperar la esencia del phreaking y esa mística de las terminales de comandos de los 80, pero adaptándolas a lo que hoy busco como radioaficionado: simplicidad, control y un entorno de operación limpio. Sobre todo, busqué cero complejidad en lo que es la programación, sin poner el foco en el "look and feel" web, sino todo lo contrario: lo más rústico y básico posible.
 
 Cómo funca el sistema
+
 Para la transmisión, elegí modulación AFSK a 100 baudios. Mi prioridad no fue la velocidad, sino lograr un equilibrio: quería que el texto fluyera de forma natural en la pantalla, pero con la robustez necesaria para bancarse el ruido o el fading. El programa está desarrollado en Python sobre una Raspberry Pi, gestiona el PTT automáticamente mediante DTR y mantiene un registro histórico de cada QSO.
 
 No busqué competir con los protocolos automáticos que dominan la radio hoy en día, ni ofrecer una solución matemática al ruido creando algo nuevo; simplemente me dediqué a utilizar librerías disponibles y experimentar hasta que salga algo medianamente potable y funcional. Mis conocimientos de programación nunca tuvieron el foco en las comunicaciones vía radio, así que esto fue pura exploración.
