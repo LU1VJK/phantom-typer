@@ -13,7 +13,7 @@ import re
 CALLSIGN = ""
 BAUD = "100"
 SERIAL_PORT = "/dev/ttyUSB0"
-# Se define dinámicamente en intro o configuración
+# Se define dinámicamente en intro o configuración 
 LOG_FILE = ""
 PTT_METHOD = "DTR"
 BANDA_ACTUAL = ""
