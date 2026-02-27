@@ -13,7 +13,8 @@ import re
 CALLSIGN = ""
 BAUD = "100"
 SERIAL_PORT = "/dev/ttyUSB0"
-LOG_FILE = os.path.expanduser("~/PHANTOM-TYPER/phantom_history.log")
+# Se define dinámicamente en intro o configuración
+LOG_FILE = ""
 PTT_METHOD = "DTR"
 BANDA_ACTUAL = ""
 FREQ_ACTUAL = ""
@@ -36,6 +37,7 @@ C_RED    = "\033[91m"
 C_PURPLE = "\033[95m"
 C_MAGENT = "\033[35m"
 C_GRAY   = "\033[37m"
+C_YELLOW = "\033[93m"
 C_BOLD   = "\033[1m"
 C_END    = "\033[0m"
 
@@ -45,6 +47,13 @@ FRASES_DESPEDIDA = [
     "73 cordiales!."
 ]
 
+def actualizar_log_path():
+    global LOG_FILE
+    folder = os.path.expanduser("~/PHANTOM-TYPER/")
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+    LOG_FILE = os.path.join(folder, f"{CALLSIGN}.log")
+
 def intro_phreaking():
     os.system('clear')
     skull = [
@@ -52,16 +61,16 @@ def intro_phreaking():
         "         ,gS$$$Sk.        ",
         "      ,d$$$$$$$$$$$k.     ",
         "    /?^?$7°' '`?$SS$$L.   ",
-        "   ,?  $SL.__ ,d$iIS$$SL  ",
-        "  j$Su%$S$$$$$?:iIS$$Sb   ",
+        "    ,?  $SL.__ ,d$iIS$$SL  ",
+        "   j$Su%$S$$$$$?:iIS$$Sb   ",
         " :?°?^4$S$$\"°?$SL:iIS$SI:  ",
-        " :'   '/`?$' .  `?Lis$$SI: ",
-        "  '      '      ?kiSSI?   ",
+        " :'    '/`?$' .  `?Lis$$SI: ",
+        "  '      '      ?kiSSI?    ",
         "      :.      $k _ `?Si7  ",
         "      .._.._  i$S%7·:i?'  ",
         "     ?%uS%uod$$$?`·?°`    ",
         "     S$$$$$$$$$$i         ",
-        "     `?$$S?               "
+        "     `?$$S?                "
     ]
     for _ in range(15):
         os.system('clear')
@@ -80,8 +89,15 @@ def intro_phreaking():
 
     print(f"\n{C_BLUE}{C_BOLD}>>> CONFIGURACIÓN INICIAL <<<{C_END}")
     global CALLSIGN, PTT_METHOD, BANDA_ACTUAL, FREQ_ACTUAL
-    while not CALLSIGN:
-        CALLSIGN = input(f"{C_GREEN}Ingresa tu Distintiva: {C_END}").strip().upper()
+    while True:
+        temp_call = input(f"{C_GREEN}Ingresa tu Distintiva: {C_END}").strip().upper()
+        if len(temp_call) >= 3:
+            CALLSIGN = temp_call
+            actualizar_log_path()
+            break
+        else:
+            print(f"{C_RED}Error: La callsign debe tener al menos 3 caracteres.{C_END}")
+
     print(f"\n{C_PURPLE}Selecciona Banda HF:{C_END}")
     for k, v in TABLA_BANDAS.items():
         print(f"{k}. {v['n']} ({v['f']} MHz)")
@@ -95,18 +111,20 @@ def intro_phreaking():
 
 def print_banner():
     os.system('clear')
+    tag_ptt = f"{C_YELLOW}PTT: {PTT_METHOD}{C_END}"
+    tag_band = f"{C_CYAN}BAND: {BANDA_ACTUAL}{C_END}"
     print(f"""{C_GREEN}{C_BOLD}
     .-----------.
     | PHANTOM   |--.
     | TYPER v1.2|  |  {C_RED}[OP: {CALLSIGN}]{C_GREEN}
-    '-----------'  |  {C_BLUE}[PTT: {PTT_METHOD} | BAND: {BANDA_ACTUAL}]{C_GREEN}
+    '-----------'  |  [{tag_ptt}{C_GREEN} | {tag_band}{C_GREEN}]{C_GREEN}
        '-----------' {C_END}
     {C_BLUE}>> PHANTOM-TYPER <<{C_END}""")
 
 def log_adif(remote_call):
     date_utc = datetime.datetime.utcnow().strftime("%Y%m%d")
     time_utc = HORA_INICIO_QSO if HORA_INICIO_QSO else datetime.datetime.utcnow().strftime("%H%M")
-    entry = f"<QSO_DATE:8>{date_utc} <TIME_ON:4>{time_utc} <CALL:{len(remote_call)}>{remote_call} <BAND:{len(BANDA_ACTUAL)}>{BANDA_ACTUAL} <FREQ:{len(FREQ_ACTUAL)}>{FREQ_ACTUAL} <MODE:7>AFSK100 <RST_SENT:3>599 <EOR>"
+    entry = f"<QSO_DATE:8>{date_utc} <TIME_ON:4>{time_utc} <STATION_CALLSIGN:{len(CALLSIGN)}>{CALLSIGN} <CALL:{len(remote_call)}>{remote_call} <BAND:{len(BANDA_ACTUAL)}>{BANDA_ACTUAL} <FREQ:{len(FREQ_ACTUAL)}>{FREQ_ACTUAL} <MODE:7>AFSK100 <RST_SENT:3>599 <EOR>"
     with open(LOG_FILE, "a") as f:
         f.write(entry + "\n")
         f.flush()
@@ -121,10 +139,9 @@ def mostrar_contexto():
         print(msg)
     
     if os.path.exists(LOG_FILE):
-        print(f"{C_BLUE}--- ÚLTIMOS 10 LOGS GUARDADOS ---{C_END}")
+        print(f"{C_BLUE}--- ÚLTIMOS 10 LOGS GUARDADOS EN {os.path.basename(LOG_FILE)} ---{C_END}")
         with open(LOG_FILE, "r") as f:
             lines = [line.strip() for line in f.readlines() if "<QSO_DATE" in line]
-            # Seleccionamos las últimas 10 entradas y las invertimos
             ultimos_diez = lines[-10:]
             for l in reversed(ultimos_diez):
                 call = re.search(r'<CALL:\d+>(.*?) <BAND', l)
@@ -268,8 +285,6 @@ def modo_operativo():
             proc.wait()
 
 if __name__ == "__main__":
-    if not os.path.exists(os.path.dirname(LOG_FILE)):
-        os.makedirs(os.path.dirname(LOG_FILE))
     try:
         intro_phreaking()
     except KeyboardInterrupt:
@@ -282,13 +297,18 @@ if __name__ == "__main__":
             print(f"{C_BOLD}2.{C_END} Ver Log ADIF")
             print(f"{C_BOLD}3.{C_END} Limpiar Pantalla (Visual)")
             print(f"{C_BOLD}4.{C_END} Salir")
+            print(f"{C_BOLD}5.{C_END} Cambiar Callsign/Banda")
             op = input(f"\n{C_GREEN}{CALLSIGN}@PHANTOM-TYPER:~ #{C_END} ")
             if op == "1": modo_operativo()
             elif op == "2":
                 if os.path.exists(LOG_FILE):
                     os.system('clear')
+                    print(f"--- CONTENIDO DE {os.path.basename(LOG_FILE)} ---")
                     print(open(LOG_FILE, "r").read())
                     input("\nEnter para volver...")
+                else:
+                    print(f"\n{C_RED}Aún no hay logs para {CALLSIGN}.{C_END}")
+                    time.sleep(1)
             elif op == "3":
                 HISTORIAL_PANTALLA = []
                 print(f"\n{C_CYAN}Historial visual limpio.{C_END}")
@@ -296,6 +316,28 @@ if __name__ == "__main__":
             elif op == "4":
                 print(f"\n{random.choice(FRASES_DESPEDIDA)}\n")
                 break
+            elif op == "5":
+                print(f"\n{C_BLUE}{C_BOLD}>>> ACTUALIZAR CONFIGURACIÓN <<<{C_END}")
+                while True:
+                    temp_call = input(f"{C_GREEN}Nueva Distintiva (Actual: {CALLSIGN}): {C_END}").strip().upper()
+                    if not temp_call:
+                        break
+                    if len(temp_call) >= 3:
+                        CALLSIGN = temp_call
+                        actualizar_log_path()
+                        break
+                    else:
+                        print(f"{C_RED}Error: La callsign debe tener al menos 3 caracteres.{C_END}")
+                print(f"\n{C_PURPLE}Selecciona Nueva Banda:{C_END}")
+                for k, v in TABLA_BANDAS.items():
+                    print(f"{k}. {v['n']} ({v['f']} MHz)")
+                b_choice = input(f"{C_GREEN}# {C_END}").strip()
+                if b_choice in TABLA_BANDAS:
+                    target = TABLA_BANDAS[b_choice]
+                    BANDA_ACTUAL = target["n"]
+                    FREQ_ACTUAL = target["f"]
+                print(f"\n{C_CYAN}Configuración actualizada.{C_END}")
+                time.sleep(1)
         except KeyboardInterrupt:
             print(f"\nUsa la opción 4 para salir.")
             time.sleep(1)
