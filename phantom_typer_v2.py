@@ -116,7 +116,7 @@ def print_banner():
     print(f"""{C_GREEN}{C_BOLD}
     .-----------.
     | PHANTOM   |--.
-    | TYPER v1.2|  |  {C_RED}[OP: {CALLSIGN}]{C_GREEN}
+    | TYPER v2.0|  |  {C_RED}[OP: {CALLSIGN}]{C_GREEN}
     '-----------'  |  [{tag_ptt}{C_GREEN} | {tag_band}{C_GREEN}]{C_GREEN}
        '-----------' {C_END}
     {C_BLUE}>> PHANTOM-TYPER <<{C_END}""")
