@@ -5,18 +5,44 @@
  | |    | | | | (_| | | | | |_| (_) | | | | | |   | | |_| | |_) |  __/ |            
  |_|    |_| |_|\__,_|_| |_|\__\___/|_| |_| |_|   |_|\__, | .__/ \___|_|            
                                                      __/ | |                       
- >> TERMINAL AFSK V1.1 | DE LU1VJK | BARILOCHE DX <<|___/|_|
+ >> TERMINAL AFSK V3 | DE LU1VJK | BARILOCHE DX <<|___/|_|
 ```
-PhantomTyper es una interfaz de comunicación por texto para HF y VHF diseñada para el intercambio asincrónico de datos. Este desarrollo nace de una cuenta pendiente que traía desde los años 90: en esa época, cuando decodificaba mis primeros mensajes POCSAG con el POC32 y más adelante con el PDW, me quedó grabada la idea de desarrollar un sistema propio. Pasó el tiempo, pero la intención de concretarlo siempre estuvo ahí; hoy, el PhantomTyper es el resultado de ese proyecto que finalmente pude cerrar.
+Phantom Typer v3.0 (Web Edition)
+Esta nueva versión del Phantom Typer evoluciona de una interfaz de comandos pura a un servidor web basado en Flask y SocketIO. El objetivo sigue siendo el mismo: mantener la simplicidad y la mística de las terminales de los 80, pero permitiendo operar la Raspberry Pi desde cualquier dispositivo (celular, tablet o PC) mediante un navegador, sin perder la robustez de la modulación AFSK a 100 baudios.
 
-Mi visión con este proyecto fue alejarme de los modos digitales modernos que dependen de interfaces gráficas pesadas y complejas. Quise recuperar la esencia del phreaking y esa mística de las terminales de comandos de los 80, pero adaptándolas a lo que hoy busco como radioaficionado: simplicidad, control y un entorno de operación limpio. Sobre todo, busqué cero complejidad en lo que es la programación, sin poner el foco en el "look and feel" web, sino todo lo contrario: lo más rústico y básico posible.
+Novedades de la Versión 3.0
+Interfaz Web Responsiva: Panel de control accesible vía HTTP.
 
-Cómo funca el sistema
+Gestión de PTT Dual: Soporte para VOX y control directo por DTR (Serial).
 
-Para la transmisión, elegí modulación AFSK a 100 baudios. Mi prioridad no fue la velocidad, sino lograr un equilibrio: quería que el texto fluyera de forma natural en la pantalla, pero con la robustez necesaria para bancarse el ruido o el fading. El programa está desarrollado en Python sobre una Raspberry Pi, gestiona el PTT automáticamente mediante DTR y mantiene un registro histórico de cada QSO.
+Sistema de Logs Automático: Generación de registros en formato ADIF para fácil exportación.
 
-No busqué competir con los protocolos automáticos que dominan la radio hoy en día, ni ofrecer una solución matemática al ruido creando algo nuevo; simplemente me dediqué a utilizar librerías disponibles y experimentar hasta que salga algo medianamente potable y funcional. Mis conocimientos de programación nunca tuvieron el foco en las comunicaciones vía radio, así que esto fue pura exploración.
+Macros Integradas: Botones rápidos para CQ, AGN, RST y 73.
 
-Mi idea fue desarrollar algo simple, tener una herramienta (un juguete, si se quiere) que me dé la satisfacción de estar frente a una terminal pura, donde la comunicación es directa y tenga ese sabor a radioafición clásica. Es, básicamente, las ganas de experimentar, jugar a la radio y concretar algo a casi 30 años de anhelar algo similar.
+Historial en Tiempo Real: Visualización del tráfico RX/TX y logs previos en la misma pantalla.
 
-Espero convencer a algún colega que se sienta cómodo con una consola, en vez de un entorno gráfico, para hacer algunas pruebas entre estaciones.
+Requisitos Técnicos
+Hardware: Raspberry Pi (probado en Pi 3/4) con interfaz de audio (USB o integrada).
+
+Software: Python 3, Flask, Flask-SocketIO, PyAudio, y el motor de modulación minimodem.
+
+Dependencias de Sistema:
+sudo apt-get install minimodem portaudio19-dev python3-pyaudio
+
+Configuración y Uso
+Ejecución: Corre el script phantom_typer.py en tu Raspberry Pi.
+
+Acceso: Abre un navegador en la red local e ingresa a http://<IP_DE_TU_PI>:5000.
+
+Configuración Inicial: Al ingresar, el sistema solicitará tu distintiva (Callsign), la banda de operación y el método de PTT.
+
+Operación: * Usa el campo Corresponsal y el botón SET para iniciar un QSO. Esto permite que las macros y el log automático funcionen correctamente.
+
+El botón TX ENVIAR o la tecla Enter transmiten el texto escrito en el campo de mensaje.
+
+Al finalizar el contacto, el botón SAVE LOG guarda la información en formato ADIF dentro de la carpeta ~/PHANTOM-TYPER/.
+
+Estructura del Proyecto
+El núcleo del sistema utiliza threading para gestionar el flujo de audio de minimodem sin bloquear la interfaz web. El audio es capturado y procesado a una tasa de 8000 Hz, optimizada para la decodificación de señales de radio en condiciones de ruido.
+
+"La idea sigue siendo la misma: una herramienta rústica, funcional y directa. Menos look-and-feel moderno, más sabor a radioafición clásica."
